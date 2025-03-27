@@ -20,8 +20,8 @@ const AuthForm = ({ type }: { type: FormType }) => {
   };
 
   const formSchema = authFormSchema(type);
-
-  const form = useForm<z.infer<typeof formSchema>>({
+type FormField = z.infer<typeof formSchema>
+  const form = useForm<FormField>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -63,11 +63,23 @@ const AuthForm = ({ type }: { type: FormType }) => {
                 control={form.control}
                 name="name"
                 label="Name"
-                placeholder="Your Name"
+                placeholder="John Doe"
               />
             )}
-            <p>Email</p>
-            <p>Password</p>
+            <FormField
+                control={form.control}
+                name="email"
+                label="Email"
+                placeholder="john.doe@example.com"
+                type="email"
+              />
+            <FormField
+                control={form.control}
+                name="password"
+                label="Name"
+                placeholder="*******"
+                type="password"
+              />
             <Button
               className="!w-full !bg-primary-200 !text-dark-100 hover:!bg-primary-200/80 !rounded-full !min-h-10 !font-bold !px-5 cursor-pointer"
               type="submit"
