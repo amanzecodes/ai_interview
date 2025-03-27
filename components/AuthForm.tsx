@@ -9,8 +9,10 @@ import { Form } from "@/components/ui/form";
 import Link from "next/link";
 import { toast } from "sonner";
 import FormField from "./FormField";
+import { useRouter } from "next/navigation";
 
 const AuthForm = ({ type }: { type: FormType }) => {
+  const router = useRouter();
   const authFormSchema = (type: FormType) => {
     return z.object({
       name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
@@ -20,7 +22,7 @@ const AuthForm = ({ type }: { type: FormType }) => {
   };
 
   const formSchema = authFormSchema(type);
-type FormField = z.infer<typeof formSchema>
+  type FormField = z.infer<typeof formSchema>;
   const form = useForm<FormField>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -30,12 +32,14 @@ type FormField = z.infer<typeof formSchema>
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: FormField) {
     try {
       if (type === "sign-up") {
-        console.log("SIGN UP", values);
+        toast.success("Account created successfully. Please Sign-in");
+        router.push("/sign-in");
       } else {
-        console.log("SIGN IN", values);
+        toast.success("Sign in successful")
+        router.push("/")
       }
     } catch (error) {
       console.error(error);
@@ -67,19 +71,19 @@ type FormField = z.infer<typeof formSchema>
               />
             )}
             <FormField
-                control={form.control}
-                name="email"
-                label="Email"
-                placeholder="john.doe@example.com"
-                type="email"
-              />
+              control={form.control}
+              name="email"
+              label="Email"
+              placeholder="john.doe@example.com"
+              type="email"
+            />
             <FormField
-                control={form.control}
-                name="password"
-                label="Name"
-                placeholder="*******"
-                type="password"
-              />
+              control={form.control}
+              name="password"
+              label="Password"
+              placeholder="*******"
+              type="password"
+            />
             <Button
               className="!w-full !bg-primary-200 !text-dark-100 hover:!bg-primary-200/80 !rounded-full !min-h-10 !font-bold !px-5 cursor-pointer"
               type="submit"
@@ -89,7 +93,7 @@ type FormField = z.infer<typeof formSchema>
           </form>
         </Form>
         <p className="text-center">
-          {isSign ? "No account yet?" : "Have an account already"}{" "}
+          {isSign ? "No account yet?" : "Have an account already?"}{" "}
           <Link
             href={!isSign ? "/sign-in" : "/sign-up"}
             className="font-bold text-user-primary ml-1"
