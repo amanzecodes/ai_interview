@@ -3,6 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { createUserWithEmailAndPassword } from "@firebase/auth";
 
 import { Button } from "./ui/button";
 import { Form } from "@/components/ui/form";
@@ -10,6 +11,8 @@ import Link from "next/link";
 import { toast } from "sonner";
 import FormField from "./FormField";
 import { useRouter } from "next/navigation";
+import { auth } from "@/firebase/client";
+import { signUp } from "@/lib/actions/auth.action";
 
 const AuthForm = ({ type }: { type: FormType }) => {
   const router = useRouter();
@@ -32,9 +35,22 @@ const AuthForm = ({ type }: { type: FormType }) => {
     },
   });
 
-  function onSubmit(values: FormField) {
+  async function onSubmit(values: FormField) {
     try {
       if (type === "sign-up") {
+        const { name, email, password } = values
+
+        const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
+        const result = await signUp({
+          uid: userCredentials.user.uid,
+          name: name!,
+          email,
+          password
+        })
+
+        if(!result?.success) {
+          toast.error(result?.message)
+        }
         toast.success("Account created successfully. Please Sign-in");
         router.push("/sign-in");
       } else {
