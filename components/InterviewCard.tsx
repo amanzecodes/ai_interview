@@ -11,7 +11,6 @@ const InterviewCard = ({
   techstack,
   type,
   createdAt,
-  userId,
 }: InterviewCardProps) => {
   const feedback = null as Feedback | null;
   const normalizedType = /mix/gi.test(type) ? "Mixed" : type;
