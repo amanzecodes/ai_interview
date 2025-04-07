@@ -9,9 +9,9 @@ export function cn(...inputs: ClassValue[]) {
 const techIconBaseURL = "https://cdn.jsdelivr.net/gh/devicons/devicon/icons";
 
 const normalizeTechName = (tech: string) => {
-  const key = tech.toLowerCase().replace(/\.js$/, "").replace(/\s+/g, "");
-  return mappings[key as keyof typeof mappings];
-};
+  const key = tech.toLowerCase().replace(/\.js$/, "").replace(/\s+/g, "")
+  return mappings[key as keyof typeof mappings]
+}
 
 const checkIconExists = async (url: string) => {
   try {
@@ -22,7 +22,9 @@ const checkIconExists = async (url: string) => {
   }
 };
 
-export const getTechLogos = async (techArray: string[]) => {
+export const getTechLogos = async (techArray: string[] = []) => {
+  if (!Array.isArray(techArray)) return [];
+
   const logoURLs = techArray.map((tech) => {
     const normalized = normalizeTechName(tech);
     return {
@@ -40,6 +42,7 @@ export const getTechLogos = async (techArray: string[]) => {
 
   return results;
 };
+
 
 export const getRandomInterviewCover = () => {
   const randomIndex = Math.floor(Math.random() * interviewCovers.length);
