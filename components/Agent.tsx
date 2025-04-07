@@ -64,16 +64,22 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
-    await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
-      variableValues: {
-        userName: userName,
-        userid: userId,
-      },
-    });
+
+    try {
+      await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
+        variableValues: {
+          username: userName,
+          userid: userId,
+        },
+      });
+    } catch (error) {
+      console.error("Vapi.start failed:", error);
+    }
+    
   };
   const handleDisconnect = async () => {
     setCallStatus(CallStatus.FINISHED);
-    await vapi.stop();
+    vapi.stop();
   };
 
   const latestMessages = messages[messages.length - 1]?.content;
