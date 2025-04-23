@@ -11,12 +11,12 @@ import Link from "next/link";
 const page = async () => {
   const user = await getCurrentUser();
   const [userInterviews, latestInterviews] = await Promise.all([
-    await getInterviewByUserId(user?.id!),
-    await getLatestInterviews({ userId: user?.id! })
-  ])
+    (await getInterviewByUserId(user?.id!)) || [],
+    (await getLatestInterviews({ userId: user?.id! })) || [],
+  ]);
 
-  const hasPastInterviews = userInterviews?.length > 0;
-  const hasUpcomingInterviews = latestInterviews?.length > 0;
+  const hasPastInterviews = userInterviews.length > 0;
+  const hasUpcomingInterviews = latestInterviews.length > 0;
   
   return (
     <>
@@ -43,9 +43,16 @@ const page = async () => {
         <h2>Your Interview</h2>
 
         <div className="interviews-section">
-        {hasPastInterviews ? (
+          {hasPastInterviews ? (
             userInterviews?.map((interview) => (
-              <InterviewCard {...interview} key={interview.id} />
+              <InterviewCard
+                role={interview.role}
+                techstack={interview.techstack}
+                createdAt={interview.createdAt}
+                type={interview.type}
+                interviewId={interview.id}
+                key={interview.id}
+              />
             ))
           ) : (
             <p>You haven&apos;t taken any interviews yet</p>

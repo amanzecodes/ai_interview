@@ -39,7 +39,7 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
 
     const onSpeechStart = () => setIsSpeaking(true);
     const onSpeechEnd = () => setIsSpeaking(false);
-    const onError = (error: Error) => console.log("Error", error);
+    const onError = (error: Error) => console.log("Error", error.message);
 
     vapi.on("call-start", onCallStart);
     vapi.on("call-end", onCallEnd);
@@ -64,7 +64,7 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
 
   const handleCall = async () => {
     setCallStatus(CallStatus.CONNECTING);
-
+    
     try {
       await vapi.start(process.env.NEXT_PUBLIC_VAPI_WORKFLOW_ID!, {
         variableValues: {
@@ -74,9 +74,15 @@ const Agent = ({ userName, userId, type }: AgentProps) => {
       });
     } catch (error) {
       console.error("Vapi.start failed:", error);
+      // Handle specific error types if needed
+      if (error instanceof Error) {
+        alert(`Error: ${error.message}`);
+      } else {
+        alert("An unexpected error occurred.");
+      }
     }
-    
   };
+  
   const handleDisconnect = async () => {
     setCallStatus(CallStatus.FINISHED);
     vapi.stop();

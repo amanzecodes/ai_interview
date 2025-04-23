@@ -131,19 +131,35 @@ export async function isAuthenticated() {
   return !!user;
 }
 
-export async function getInterviewByUserId(userId: string):Promise<Interview [] | null> {
-    const interviews = await db.collection('interview').where("userid", '==', userId).orderBy('createdAt', 'desc').get();
+export async function getInterviewByUserId(userId: string): Promise<Interview[] | null> {
+  const interviews = await db
+    .collection("interview")
+    .where("userid", "==", userId)
+    .orderBy("createdAt", "desc")
+    .get();
 
-    return interviews.docs.map((doc) => ({
+  return interviews.docs.map((doc) => {
+    const data = doc.data();
+
+    return {
       id: doc.id,
-      ...doc.data
-    })) as Interview[];
+      role: data.role ?? "",
+      level: data.level ?? "",
+      questions: data.questions ?? [],
+      techstack: data.techstack ?? [],
+      createdAt: data.createdAt?.toDate?.().toISOString() ?? new Date().toISOString(),
+      userId: data.userid ?? "", // you called it "userid" in Firestore
+      type: data.type ?? "",
+      finalized: data.finalized ?? false,
+    };
+  });
 }
+
 
 export async function getLatestInterviews(params: GetLatestInterviewsParams):Promise<Interview [] | null> {
    const { userId, limit = 20 } = params;
 
-    const interviews = await db.collection('interview').orderBy('createdAt', 'desc').where("finalized", '==', true).where('userid', '!=', 'userId').limit(limit).get();
+    const interviews = await db.collection('interview').orderBy('createdAt', 'desc').where("finalized", '==', true).where('userid', '!=', userId).limit(limit).get();
 
     return interviews.docs.map((doc) => ({
       id: doc.id,

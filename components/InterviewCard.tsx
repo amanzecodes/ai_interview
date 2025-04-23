@@ -4,8 +4,9 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import DisplayTechIcons from "./DisplayTechIcons";
+import { getCurrentUser, getInterviewByUserId } from "@/lib/actions/auth.action";
 
-const InterviewCard = ({
+const  InterviewCard = async ({
   interviewId,
   role,
   techstack,
@@ -17,6 +18,13 @@ const InterviewCard = ({
   const formattedDate = dayjs(
     feedback?.createdAt || createdAt || Date.now()
   ).format("MMMM, DD, YYYY");
+
+  const currentUser = await getCurrentUser();
+  if(!currentUser) return null;
+
+
+  const userGeneratedInterview = await getInterviewByUserId(currentUser.id)
+  console.log(userGeneratedInterview);
 
   return (
     <div className="card-border w-[360px] max-sm:w-full min-h-96">
